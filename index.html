@@ -309,6 +309,63 @@ pre { margin: 0; padding: 0 14px 14px; overflow-x: auto; font-family: var(--font
   .item button { padding: 6px 0; }
 }
 @media (prefers-reduced-motion: reduce) { .person:hover { transform: none; } }
+
+/* ---------- pop-ups: loader, success, first-visit tour ---------- */
+.ovl { position: fixed; inset: 0; z-index: 100; display: grid; place-items: center; padding: 18px;
+  background: rgba(10, 14, 28, .55); backdrop-filter: blur(3px); animation: ovlIn .18s ease-out; }
+.ovl[hidden] { display: none; }
+.ovl-card { width: min(420px, 100%); background: var(--surface); color: var(--ink); border: 1px solid var(--line);
+  border-radius: 16px; padding: 26px 24px 20px; text-align: center; box-shadow: 0 24px 60px rgba(0,0,0,.35);
+  animation: cardIn .26s cubic-bezier(.2,.9,.3,1.2); }
+.ovl-card h3 { font-family: var(--font-display); font-size: 21px; margin: 14px 0 6px; }
+.ovl-card p { color: var(--muted); font-size: 14px; line-height: 1.5; margin: 0 0 16px; overflow-wrap: anywhere; }
+@keyframes ovlIn { from { opacity: 0; } }
+@keyframes cardIn { from { opacity: 0; transform: translateY(14px) scale(.96); } }
+/* loader: a little Game of Life blinker */
+.gol { display: inline-grid; grid-template-columns: repeat(3, 16px); gap: 4px; }
+.gol i { width: 16px; height: 16px; border-radius: 4px; background: var(--line); }
+.gol i.h { animation: golH 1s steps(1) infinite; }
+.gol i.v { animation: golV 1s steps(1) infinite; }
+.gol i.c { background: var(--born); }
+@keyframes golH { 0% { background: var(--accent); } 50% { background: var(--line); } }
+@keyframes golV { 0% { background: var(--line); } 50% { background: var(--accent); } }
+.bar { height: 4px; border-radius: 4px; background: var(--accent-soft); overflow: hidden; margin: 4px auto 0; width: 70%; }
+.bar span { display: block; height: 100%; width: 40%; background: var(--accent); border-radius: 4px; animation: barMove 1.1s ease-in-out infinite; }
+@keyframes barMove { 0% { transform: translateX(-100%); } 100% { transform: translateX(260%); } }
+/* success / error badge */
+.badge { width: 64px; height: 64px; border-radius: 50%; display: grid; place-items: center; margin: 0 auto;
+  background: var(--good-soft); color: var(--good); animation: pop .4s cubic-bezier(.2,.9,.3,1.5); }
+.badge.bad { background: var(--bad-soft); color: var(--bad); }
+.badge svg { width: 34px; height: 34px; }
+.badge path { stroke-dasharray: 40; stroke-dashoffset: 40; animation: draw .45s .15s ease-out forwards; }
+@keyframes pop { from { transform: scale(.3); opacity: 0; } }
+@keyframes draw { to { stroke-dashoffset: 0; } }
+.confetti { position: fixed; top: 38%; left: 50%; width: 8px; height: 8px; border-radius: 2px; pointer-events: none; z-index: 101;
+  animation: fly .9s ease-out forwards; }
+@keyframes fly { to { transform: translate(var(--dx), var(--dy)) rotate(var(--r)); opacity: 0; } }
+.ovl-actions { display: flex; gap: 8px; justify-content: center; flex-wrap: wrap; }
+.ovl-actions .btn { padding: 9px 18px; font-size: 14px; }
+/* tour */
+.tour .ovl-card { width: min(480px, 100%); text-align: left; padding: 0; overflow: hidden; }
+.tour-art { height: 120px; display: grid; place-items: center; font-size: 46px;
+  background: linear-gradient(135deg, var(--accent-soft), var(--born-soft)); }
+.tour-body { padding: 18px 22px 18px; }
+.tour-body h3 { margin: 0 0 8px; }
+.tour-body p { margin: 0 0 10px; }
+.tour-body ul { margin: 0 0 6px; padding-left: 18px; color: var(--muted); font-size: 14px; line-height: 1.55; }
+.tour-foot { display: flex; align-items: center; justify-content: space-between; gap: 10px; padding: 12px 22px 18px; }
+.dots { display: flex; gap: 6px; }
+.dots i { width: 8px; height: 8px; border-radius: 50%; background: var(--line); transition: width .2s, background .2s; }
+.dots i.on { width: 22px; border-radius: 6px; background: var(--accent); }
+.tour-skip { background: none; border: 0; color: var(--muted); cursor: pointer; font-size: 13px; text-decoration: underline; }
+.help-fab { position: fixed; right: 18px; bottom: 18px; z-index: 50; width: 44px; height: 44px; border-radius: 50%;
+  border: 0; background: var(--accent); color: #fff; font: 700 20px var(--font-display); cursor: pointer;
+  box-shadow: 0 8px 22px rgba(0,0,0,.25); }
+.help-fab:hover { transform: translateY(-2px); }
+@media (prefers-reduced-motion: reduce) {
+  .ovl, .ovl-card, .badge, .badge path, .bar span, .gol i { animation: none !important; }
+  .badge path { stroke-dashoffset: 0; }
+}
 </style>
 </head>
 <body>
@@ -1151,14 +1208,17 @@ async function uploadFile(m, s, file, msg) {
   const fake = await notRealFile(file, ext);
   if (fake) { setMsg(msg, fake, "err"); return; }
   setMsg(msg, `Uploading ${file.name} to Google Drive…`);
+  showLoading(`Uploading ${file.name}…`, `Saving it to ${m.short}'s folder in Google Drive. Please keep this page open.`);
   try {
     const data = await toBase64(file);
     const r = await api({ action: "submit", member: m.id, slot: s.id, kind: "file", fileName: file.name, mime: TYPE_BY_EXT[ext] || file.type || "application/octet-stream", data });
     remember(r);
     setMsg(msg, `${file.name} submitted to Google Drive.`, "okk");
-    await loadSubs();
+    await loadSubs().catch(() => {});
+    showResult(true, "Submitted!", `${file.name} is saved in Google Drive for "${s.title}".`);
   } catch (e) {
     setMsg(msg, `${file.name} couldn't be uploaded: ${e.message}. Try again, or paste a Google Drive link.`, "err");
+    showResult(false, "Upload didn't go through", `${e.message}. Try again, or use Paste a link with a Google Drive link.`);
   }
 }
 
@@ -1166,24 +1226,30 @@ async function saveLinkItem(m, s, input, msg) {
   const v = input.value.trim();
   if (!/^https?:\/\/\S+\.\S+/i.test(v)) { setMsg(msg, "Paste a full link starting with https://", "err"); return; }
   setMsg(msg, "Saving link…");
+  showLoading("Saving your link…", "This only takes a moment.");
   try {
     const r = await api({ action: "submit", member: m.id, slot: s.id, kind: "link", link: v });
     remember(r);
     input.value = "";
     setMsg(msg, "Link submitted.", "okk");
-    await loadSubs();
+    await loadSubs().catch(() => {});
+    showResult(true, "Link submitted!", `Your link for "${s.title}" is in.`);
   } catch (e) {
     setMsg(msg, `Couldn't save the link: ${e.message}`, "err");
+    showResult(false, "Link not saved", e.message);
   }
 }
 
 async function removeItem(it) {
+  const label = it.data.fileName || it.data.link || "this item";
+  showLoading("Removing…", label);
   try {
     await api({ action: "remove", id: it.id, token: myTokens[it.id] });
     delete myTokens[it.id]; saveTokens();
-    await loadSubs();
+    await loadSubs().catch(() => {});
+    showResult(true, "Removed", `${label} is no longer listed as submitted.`);
   } catch (e) {
-    alertBanner("Couldn't remove that item: " + e.message);
+    showResult(false, "Couldn't remove it", e.message);
   }
 }
 
@@ -1783,6 +1849,91 @@ async function loadSubs() {
   if (out.config && /^\d{4}-\d{2}-\d{2}$/.test(out.config.pr1 || "")) pr1Date = out.config.pr1;
   renderAll();
 }
+
+/* ================================================================== pop-ups: loader, success, tour */
+let ovlTimer = null;
+function overlay() {
+  let o = document.getElementById("ovl");
+  if (!o) { o = el("div", { id: "ovl", class: "ovl", role: "dialog", "aria-modal": "true", "aria-live": "assertive" }); o.hidden = true; document.body.append(o); }
+  return o;
+}
+function hideOverlay() { clearTimeout(ovlTimer); const o = overlay(); o.hidden = true; o.className = "ovl"; o.textContent = ""; }
+function showLoading(title, sub) {
+  clearTimeout(ovlTimer);
+  const o = overlay(); o.className = "ovl"; o.textContent = "";
+  const g = el("div", { class: "gol", "aria-hidden": "true" });
+  ["", "v", "", "h", "c", "h", "", "v", ""].forEach(k => g.append(el("i", { class: k })));
+  o.append(el("div", { class: "ovl-card" }, g, el("h3", {}, title), el("p", {}, sub || "Please keep this page open."), el("div", { class: "bar" }, el("span"))));
+  o.hidden = false;
+}
+const ICON_OK = '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12.5l4.5 4.5L19 7.5"/></svg>';
+const ICON_BAD = '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round"><path d="M7 7l10 10M17 7L7 17"/></svg>';
+function showResult(ok, title, sub) {
+  clearTimeout(ovlTimer);
+  const o = overlay(); o.className = "ovl"; o.textContent = "";
+  const badge = el("div", { class: "badge" + (ok ? "" : " bad") }); badge.innerHTML = ok ? ICON_OK : ICON_BAD;
+  const btn = el("button", { class: "btn", type: "button" }, ok ? "Nice!" : "OK");
+  btn.addEventListener("click", hideOverlay);
+  o.append(el("div", { class: "ovl-card" }, badge, el("h3", {}, title), el("p", {}, sub || ""), el("div", { class: "ovl-actions" }, btn)));
+  o.hidden = false; btn.focus();
+  o.onclick = e => { if (e.target === o) hideOverlay(); };
+  if (ok) { confetti(); ovlTimer = setTimeout(hideOverlay, 3200); }
+}
+function confetti() {
+  if (matchMedia("(prefers-reduced-motion: reduce)").matches) return;
+  const colors = ["#2f6fe4", "#f2b938", "#1f8a4c", "#6c9cff", "#e8a317"];
+  for (let i = 0; i < 28; i++) {
+    const a = Math.random() * Math.PI * 2, d = 120 + Math.random() * 160;
+    const c = el("i", { class: "confetti" });
+    c.style.background = colors[i % colors.length];
+    c.style.setProperty("--dx", Math.cos(a) * d + "px"); c.style.setProperty("--dy", Math.sin(a) * d + 60 + "px");
+    c.style.setProperty("--r", (Math.random() * 540 - 270) + "deg");
+    document.body.append(c); setTimeout(() => c.remove(), 1000);
+  }
+}
+document.addEventListener("keydown", e => { if (e.key === "Escape") { const o = document.getElementById("ovl"); if (o && !o.hidden && !o.querySelector(".gol")) hideOverlay(); } });
+
+const TOUR = [
+  { art: "👋", title: "Welcome to the Group 2 portal", body: "This is where we finish Progress Report 1 for Game of Life with Music. No sign-in needed: just open the link.",
+    list: ["PR1 presentation: November 11", "Sections due: November 9"] },
+  { art: "🧑‍💻", title: "Find your part", body: "Click your name under Group members on the left (on a phone, tap ☰ first).",
+    list: ["Instructions: your steps, what to include, and when you're done", "Research: questions to answer, with sources", "Starter file: the code file you commit to GitHub"] },
+  { art: "📤", title: "Submit your work", body: "In the Submission box on your page:",
+    list: ["Upload file: PDF, image, or code, up to 20 MB", "Paste a link: Google Drive, Canva, GitHub", "Wait for the pop-up: it means your file is saved in our Google Drive"] },
+  { art: "✅", title: "Check what's in", body: "The Submissions page shows every item as In or Missing, with the date and time it came in.",
+    list: ["Made a mistake? Click Remove (works from the same browser you used)", "Stuck? Message Vik in the group chat"] }
+];
+function showTour(start = 0) {
+  let i = start;
+  const o = overlay(); clearTimeout(ovlTimer);
+  const close = () => { try { localStorage.setItem("p06-tour-done", "1"); } catch (e) {} hideOverlay(); };
+  const draw = () => {
+    const t = TOUR[i];
+    o.className = "ovl tour"; o.textContent = "";
+    const dots = el("div", { class: "dots", "aria-hidden": "true" }); TOUR.forEach((_, k) => dots.append(el("i", { class: k === i ? "on" : "" })));
+    const back = el("button", { class: "btn ghost", type: "button" }, "Back"); back.disabled = i === 0;
+    const next = el("button", { class: "btn", type: "button" }, i === TOUR.length - 1 ? "Let's go!" : "Next");
+    const skip = el("button", { class: "tour-skip", type: "button" }, "Skip tour");
+    back.addEventListener("click", () => { i--; draw(); });
+    next.addEventListener("click", () => { if (i === TOUR.length - 1) close(); else { i++; draw(); } });
+    skip.addEventListener("click", close);
+    const ul = el("ul"); t.list.forEach(x => ul.append(el("li", {}, x)));
+    o.append(el("div", { class: "ovl-card", "aria-label": `Tour step ${i + 1} of ${TOUR.length}` },
+      el("div", { class: "tour-art", "aria-hidden": "true" }, t.art),
+      el("div", { class: "tour-body" }, el("h3", {}, t.title), el("p", {}, t.body), ul),
+      el("div", { class: "tour-foot" }, el("div", { style: "display:flex;gap:12px;align-items:center" }, dots, skip), el("div", { class: "ovl-actions" }, back, next))));
+    o.hidden = false; next.focus();
+  };
+  o.onclick = null;
+  draw();
+}
+(() => {
+  const fab = el("button", { class: "help-fab", type: "button", title: "How to use this portal", "aria-label": "Show the tutorial" }, "?");
+  fab.addEventListener("click", () => showTour(0));
+  document.body.append(fab);
+  let seen = false; try { seen = localStorage.getItem("p06-tour-done") === "1"; } catch (e) {}
+  if (!seen) setTimeout(() => showTour(0), 600);
+})();
 
 /* ================================================================== boot */
 route = parseHash();
