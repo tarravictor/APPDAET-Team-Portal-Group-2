@@ -68,6 +68,9 @@ svg.i { width: 18px; height: 18px; flex: none; stroke: currentColor; fill: none;
 .navlink:hover { background: rgba(255,255,255,.07); color: #fff; }
 .navlink[aria-current="page"] { background: rgba(108,156,255,.18); color: #fff; box-shadow: inset 3px 0 0 #6c9cff; }
 .navlink .badge { margin-left: auto; font-family: var(--font-mono); font-size: 11px; background: #c2412d; color: #fff; border-radius: 99px; padding: 1px 7px; }
+.navlink .badge.none { background: #c2412d; color: #fff; }
+.navlink .badge.some { background: #f2b938; color: #2a1d00; }
+.navlink .badge.all { background: #1f8a4c; color: #fff; }
 .navgroup { font-family: var(--font-mono); font-size: 11px; letter-spacing: .07em; text-transform: uppercase; color: #7f8aa8; padding: 14px 10px 4px; }
 .sidebar .foot { margin-top: auto; font-size: 12px; color: #7f8aa8; padding: 10px; }
 
@@ -1347,6 +1350,13 @@ function prCountdown(short) {
 }
 const avatarEl = (m, cls = "") => el("div", { class: "avatar " + cls, style: `background:${COLORS[m.id]}`, "aria-hidden": "true" }, initials(m.name));
 const card = (title, body, right) => el("section", { class: "card" }, el("div", { class: "hd" }, typeof title === "string" ? el("h2", {}, title) : title, right || ""), el("div", { class: "bd" }, ...[].concat(body)));
+const totalSlots = () => MEMBERS.map(m => viewOf(m)).reduce((n, m) => n + m.slots.length, 0);
+function progressBadge() {
+  const total = totalSlots(), missing = missingCount(), done = total - missing;
+  const state = done === 0 ? "none" : missing === 0 ? "all" : "some";
+  const title = state === "all" ? `All ${total} PR1 items submitted` : `${missing} of ${total} PR1 items still missing`;
+  return el("span", { class: "badge " + state, title, "aria-label": title }, state === "all" ? "✓" : String(missing));
+}
 const missingCount = () => MEMBERS.map(m => viewOf(m)).reduce((n, m) => n + m.slots.filter(s => !slotItems(m.id, s.id).length).length, 0);
 
 /* ================================================================== shell */
@@ -1354,12 +1364,13 @@ function renderSidebar() {
   const sb = $("#sidebar"); sb.textContent = "";
   const link = (href, ic, text, key, badge) => {
     const a = el("a", { class: "navlink", href, "aria-current": key === route.view ? "page" : false }, icon(ic), el("span", {}, text));
-    if (badge) a.append(el("span", { class: "badge" }, String(badge)));
+    if (badge instanceof Node) a.append(badge);
+    else if (badge) a.append(el("span", { class: "badge" }, String(badge)));
     return a;
   };
   sb.append(el("div", { class: "course" }, el("div", { class: "code" }, "APPDAET · Progress Report 1"), el("div", { class: "name" }, "Project 06 · Game of Life with Music")));
   sb.append(link("#", "home", "Home", "home"), link("#modules", "modules", "Progress Report 1", "modules"),
-    link("#assignments", "assign", "Assignments", "assignments", missingCount()), link("#folder", "folder", "Submissions", "folder"),
+    link("#assignments", "assign", "Assignments", "assignments", progressBadge()), link("#folder", "folder", "Submissions", "folder"),
     link("#people", "people", "People", "people"));
   sb.append(el("div", { class: "navgroup" }, "Course"), link("#rules", "book", "Resources", "rules"), link("#timeline", "cal", "PR1 schedule", "timeline"));
   sb.append(el("div", { class: "navgroup" }, "Group members"));
