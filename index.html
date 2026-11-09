@@ -398,6 +398,29 @@ pre { margin: 0; padding: 0 14px 14px; overflow-x: auto; font-family: var(--font
   #boot .bbar span { animation: none; }
   .intro .topbar, .intro .logo .mark i, .intro .sidebar > *, .intro #page > *, .intro .help-fab { animation: none !important; }
 }
+
+/* ---------- legal footer + dialog ---------- */
+.legal-link { background: none; border: 0; padding: 0; font: inherit; color: inherit; text-decoration: underline; cursor: pointer; }
+.legal-link:hover { color: #fff; }
+.site-foot { max-width: 1100px; margin: 0 auto; padding: 22px 28px 70px; border-top: 1px solid var(--line); font-size: 13px; color: var(--muted); display: flex; flex-wrap: wrap; gap: 6px 16px; align-items: center; }
+.site-foot .legal-link:hover { color: var(--ink); }
+.site-foot .sp { flex: 1; }
+#legal { width: min(760px, calc(100vw - 24px)); max-height: min(86vh, 900px); padding: 0; border: 1px solid var(--line); border-radius: 14px; background: var(--surface); color: var(--ink); box-shadow: 0 24px 60px rgba(0,0,0,.35); }
+#legal::backdrop { background: rgba(10,14,28,.55); }
+#legal .lg-head { display: flex; align-items: center; gap: 8px; padding: 14px 18px; border-bottom: 1px solid var(--line); position: sticky; top: 0; background: var(--surface); z-index: 1; flex-wrap: wrap; }
+#legal .lg-head b { font-family: var(--font-display); font-size: 17px; margin-right: auto; }
+#legal .lg-tab { border: 1px solid var(--line); background: none; color: var(--ink); border-radius: 99px; padding: 5px 12px; font: 500 13px var(--font-body); cursor: pointer; }
+#legal .lg-tab[aria-selected="true"] { background: var(--accent); border-color: var(--accent); color: #fff; }
+#legal .lg-x { border: 0; background: none; color: var(--muted); font-size: 22px; cursor: pointer; line-height: 1; padding: 2px 6px; }
+#legal .lg-body { padding: 6px 22px 22px; overflow-y: auto; font-size: 14.5px; line-height: 1.6; }
+#legal section[hidden] { display: none; }
+#legal h3 { font-family: var(--font-display); font-size: 16px; margin: 18px 0 6px; }
+#legal ul { padding-left: 20px; margin: 6px 0; }
+#legal li { margin: 3px 0; }
+#legal .lg-meta { font-size: 12.5px; color: var(--muted); }
+#legal table { width: 100%; border-collapse: collapse; font-size: 14px; margin-top: 6px; }
+#legal td { border-top: 1px solid var(--line); padding: 7px 6px; vertical-align: top; }
+#legal td:first-child { font-weight: 600; white-space: nowrap; width: 34%; }
 </style>
 </head>
 <body>
@@ -421,9 +444,97 @@ pre { margin: 0; padding: 0 14px 14px; overflow-x: auto; font-family: var(--font
     <div class="me" id="me"></div>
   </header>
   <nav class="sidebar" id="sidebar" aria-label="Course"></nav>
-  <main class="content"><div class="page" id="page"></div></main>
+  <main class="content"><div class="page" id="page"></div>
+    <footer class="site-foot">
+      <span>© 2026 APPDAET Group 2 · Project 06: Game of Life with Music</span>
+      <span class="sp"></span>
+      <button type="button" class="legal-link" data-legal="privacy">Privacy Notice</button>
+      <button type="button" class="legal-link" data-legal="terms">Terms &amp; Conditions</button>
+      <button type="button" class="legal-link" data-legal="tech">Built with</button>
+    </footer>
+  </main>
 </div>
 
+
+<dialog id="legal" aria-labelledby="lg-title">
+  <div class="lg-head">
+    <b id="lg-title">About this portal</b>
+    <button type="button" class="lg-tab" data-tab="privacy" role="tab">Privacy</button>
+    <button type="button" class="lg-tab" data-tab="terms" role="tab">Terms</button>
+    <button type="button" class="lg-tab" data-tab="tech" role="tab">Built with</button>
+    <button type="button" class="lg-x" aria-label="Close">×</button>
+  </div>
+  <div class="lg-body">
+    <section data-sec="privacy">
+      <h3>Privacy Notice</h3>
+      <p class="lg-meta">Last updated: November 9, 2026</p>
+      <p>This portal is run by the members of APPDAET Group 2 as a student project. We follow the <b>Data Privacy Act of 2012 (Republic Act No. 10173)</b>, its Implementing Rules and Regulations, and the issuances of the National Privacy Commission (NPC).</p>
+      <h3>What we collect</h3>
+      <ul>
+        <li>The names of the five group members, shown on the site so tasks can be assigned.</li>
+        <li>Files and links you submit, with the time you submitted them and the task they belong to.</li>
+        <li>Small values saved in your own browser (localStorage): whether you finished the tutorial, and a private key that lets you remove your own submissions. These never leave your device except when you remove a submission.</li>
+      </ul>
+      <p>There are no accounts, passwords, ads, analytics or tracking cookies.</p>
+      <h3>Why we collect it</h3>
+      <p>Only to collect, organize and check the group's work for Progress Report 1 and the rest of the course project. We do not sell, share or use it for anything else.</p>
+      <h3>Where it is stored and who sees it</h3>
+      <ul>
+        <li>Submissions are saved to the project leader's Google Drive and a Google Sheet through Google Apps Script. Group members and anyone who has the portal link can see what was submitted.</li>
+        <li>The site is hosted on GitHub Pages. GitHub may log visitors' IP addresses for security, under GitHub's own privacy statement.</li>
+        <li>Fonts load from Google Fonts, which receives your IP address when the page loads, under Google's privacy policy.</li>
+      </ul>
+      <h3>How long we keep it</h3>
+      <p>Until the course ends. After final grades are released, the submissions folder and sheet will be deleted or archived offline.</p>
+      <h3>Please don't upload</h3>
+      <p>Other people's personal or sensitive information (IDs, phone numbers, addresses, grades, health data, photos of people without their consent). If you upload it by mistake, remove it right away or tell the project leader.</p>
+      <h3>Your rights</h3>
+      <p>Under RA 10173 you have the right to be informed, to access, to object, to correct, to have your data erased or blocked, to data portability, to claim damages, and to file a complaint with the National Privacy Commission (privacy.gov.ph). You can remove your own submissions on the site at any time. For anything else, contact the personal information controller, Victor Danielle Tarra (project leader), through the group chat.</p>
+    </section>
+    <section data-sec="terms" hidden>
+      <h3>Terms &amp; Conditions</h3>
+      <p class="lg-meta">Last updated: November 9, 2026</p>
+      <p>By using this portal you agree to these terms. If you do not agree, please don't use it.</p>
+      <h3>1. What this site is</h3>
+      <p>A student-made tool for APPDAET Group 2's Project 06. It is not an official system of the school, and it is not run, reviewed or endorsed by the school or by any instructor. Names of the course and school are used only to describe the project.</p>
+      <h3>2. Acceptable use</h3>
+      <ul>
+        <li>Use it only for the group's project work.</li>
+        <li>Upload only files you made or have the right to share. Credit any source you use.</li>
+        <li>Do not upload malware, harmful, offensive or illegal content, or anyone's personal data without consent.</li>
+        <li>Do not try to break, overload or get unauthorized access to the site or its storage. This may be a crime under the <b>Cybercrime Prevention Act of 2012 (RA 10175)</b>.</li>
+        <li>Do not remove or edit other members' submissions.</li>
+      </ul>
+      <h3>3. Your work</h3>
+      <p>You keep ownership of what you submit, as protected by the <b>Intellectual Property Code of the Philippines (RA 8293)</b>. By submitting, you let the group store, view and use it for the project and its presentations. Academic honesty rules of the school still apply to everything you submit.</p>
+      <h3>4. Removal of content</h3>
+      <p>The project leader may remove any submission that breaks these terms or the law.</p>
+      <h3>5. No warranty</h3>
+      <p>The portal is provided "as is", without warranties of any kind. It may go offline, lose data or contain mistakes. Keep your own copy of everything you submit.</p>
+      <h3>6. Limitation of liability</h3>
+      <p>To the extent allowed by law, the group members are not liable for any loss or damage from using or not being able to use the portal, including lost files or missed deadlines.</p>
+      <h3>7. Third-party services</h3>
+      <p>The portal relies on GitHub, Google Apps Script, Google Drive, Google Sheets and Google Fonts. Their own terms and privacy policies apply to your use of them.</p>
+      <h3>8. Changes and governing law</h3>
+      <p>We may update these terms; the date above shows the latest version. These terms are governed by the laws of the Republic of the Philippines, including the Data Privacy Act of 2012 (RA 10173), the Cybercrime Prevention Act of 2012 (RA 10175), the Electronic Commerce Act of 2000 (RA 8792) and the Intellectual Property Code (RA 8293).</p>
+    </section>
+    <section data-sec="tech" hidden>
+      <h3>Built with</h3>
+      <table>
+        <tr><td>Front end</td><td>HTML5, CSS3 (Grid, Flexbox, custom properties, keyframe animations) and plain JavaScript (ES2020). No frameworks or libraries.</td></tr>
+        <tr><td>Hosting</td><td>GitHub Pages, from the public repository <code>tarravictor/APPDAET-Team-Portal-Group-2</code>.</td></tr>
+        <tr><td>Version control</td><td>Git and GitHub.</td></tr>
+        <tr><td>Back end</td><td>Google Apps Script web app, called with the Fetch API (JSON over HTTPS).</td></tr>
+        <tr><td>Storage</td><td>Google Drive (one folder per member) and Google Sheets (submission log).</td></tr>
+        <tr><td>In the browser</td><td>localStorage for the tutorial flag and removal keys.</td></tr>
+        <tr><td>Fonts</td><td>Bricolage Grotesque, IBM Plex Sans and IBM Plex Mono, from Google Fonts.</td></tr>
+        <tr><td>Graphics</td><td>Hand-written SVG icons and logo; a live Conway's Game of Life on a Canvas element.</td></tr>
+        <tr><td>Accessibility</td><td>Semantic HTML, ARIA labels, keyboard focus, and reduced motion when your device asks for it.</td></tr>
+      </table>
+      <p class="lg-meta" style="margin-top:12px">Made by Victor Danielle Tarra for APPDAET Group 2, 2026.</p>
+    </section>
+  </div>
+</dialog>
 <template id="tpl-resources">
     <div class="contract">
       <div class="box">
@@ -1417,7 +1528,11 @@ function renderSidebar() {
       el("span", { style: `width:10px;height:10px;border-radius:3px;background:${COLORS[m.id]};flex:none;margin:0 4px` }), el("span", {}, m.short));
     sb.append(a);
   }
-  sb.append(el("div", { class: "foot" }, "Instructor: Engr. Bob Mathew D. Sunga, MSc"));
+  sb.append(el("div", { class: "foot" },
+    el("button", { type: "button", class: "legal-link", onclick: () => openLegal("privacy") }, "Privacy"), " · ",
+    el("button", { type: "button", class: "legal-link", onclick: () => openLegal("terms") }, "Terms"), " · ",
+    el("button", { type: "button", class: "legal-link", onclick: () => openLegal("tech") }, "Built with"),
+    el("div", { style: "margin-top:4px" }, "© 2026 APPDAET Group 2")));
 }
 
 function renderCrumbs(list) {
@@ -1982,6 +2097,24 @@ function showTour(start = 0) {
   document.body.append(fab);
   let seen = false; try { seen = localStorage.getItem("p06-tour-done") === "1"; } catch (e) {}
   if (!seen) window.addEventListener("intro-done", () => setTimeout(() => showTour(0), 300), { once: true });
+})();
+
+
+/* ================================================================== legal dialog */
+function openLegal(tab) {
+  const d = document.getElementById("legal"); if (!d) return;
+  d.querySelectorAll(".lg-tab").forEach(b => b.setAttribute("aria-selected", b.dataset.tab === tab ? "true" : "false"));
+  d.querySelectorAll("section[data-sec]").forEach(sec => sec.hidden = sec.dataset.sec !== tab);
+  d.querySelector(".lg-body").scrollTop = 0;
+  if (!d.open) d.showModal();
+}
+(() => {
+  const d = document.getElementById("legal");
+  d.querySelectorAll(".lg-tab").forEach(b => b.addEventListener("click", () => openLegal(b.dataset.tab)));
+  d.querySelector(".lg-x").addEventListener("click", () => d.close());
+  d.addEventListener("click", e => { if (e.target === d) d.close(); });
+  document.querySelectorAll("[data-legal]").forEach(b => b.addEventListener("click", () => openLegal(b.dataset.legal)));
+  if (/^#(privacy|terms|tech)$/.test(location.hash)) openLegal(location.hash.slice(1));
 })();
 
 /* ================================================================== boot */
