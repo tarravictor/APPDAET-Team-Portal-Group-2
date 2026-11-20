@@ -18,8 +18,11 @@ var FOLDERS = {
 };
 var NAMES = { armas: 'Armas', manalili: 'Manalili', diego: 'Diego', tumulac: 'Tumulac', vik: 'Vik' };
 var SLOTS = {
-  manalili: ['pr1-scope'], armas: ['pr1-algo'], tumulac: ['pr1-decomp', 'pr1-report'],
-  diego: ['pr1-env', 'pr1-wire'], vik: ['pr1-repo', 'pr1-gh', 'pr1-pm', 'pr1-slides']
+  manalili: ['pr1-scope', 'pr2-music', 'pr2-shots'],
+  armas: ['pr1-algo', 'pr2-life', 'pr2-algo'],
+  tumulac: ['pr1-decomp', 'pr1-report', 'pr2-tests', 'pr2-testdoc', 'pr2-decomp'],
+  diego: ['pr1-env', 'pr1-wire', 'pr2-readme', 'pr2-sound'],
+  vik: ['pr1-repo', 'pr1-gh', 'pr1-pm', 'pr1-slides', 'pr2-proto', 'pr2-repo', 'pr2-report', 'pr2-slides']
 };
 var EXT_OK = ['pdf', 'png', 'jpg', 'jpeg', 'gif', 'webp', 'mp4', 'py', 'txt', 'md', 'csv', 'json', 'docx', 'pptx', 'xlsx', 'zip'];
 var HEAD = ['id', 'at', 'member', 'slot', 'kind', 'fileName', 'link', 'url', 'token', 'removed'];
