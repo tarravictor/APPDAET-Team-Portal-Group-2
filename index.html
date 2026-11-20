@@ -526,6 +526,8 @@ h2 { font-size: 17px; }
 .hero-dl .big { font-size: 58px; font-weight: 600; line-height: 1; letter-spacing: -.03em; font-variant-numeric: tabular-nums; }
 .hero-dl .big small { font-size: 18px; font-weight: 500; letter-spacing: 0; opacity: .85; }
 .hero-dl b { font-weight: 600; font-size: 15px; }
+.hero-dl .pres { font-size: 13.5px; opacity: .88; }
+.phasebox .days { font-family: var(--font-body); font-weight: 600; font-size: 12.5px; color: var(--accent-text); }
 .hero-prog { display: grid; gap: 6px; margin-top: 12px; font-size: 13px; opacity: .92; }
 .hbar { height: 6px; border-radius: 99px; background: rgba(255,255,255,.22); overflow: hidden; }
 .hbar span { display: block; height: 100%; background: #fff; border-radius: 99px; }
@@ -1808,16 +1810,14 @@ function daysTo(dateStr, offset = 0) {
 }
 const dayWord = n => n === 0 ? "today" : n === 1 ? "tomorrow" : n === -1 ? "yesterday" : n > 0 ? `in ${n} days` : `${-n} days ago`;
 function prCountdown(short) {
-  const n = daysTo(pr1Date);
-  if (n === null) {
-    const k = daysTo(SUBMIT_BY);
-    if (k === null) return short ? "PR2 date TBA" : "The PR2 date hasn't been announced yet.";
-    if (short) return k > 0 ? `Due Tue, Nov 24 · ${dayWord(k)}` : k === 0 ? "Due today" : "Deadline passed";
-    return `Everything is due Tuesday, Nov 24 (${dayWord(k)}). No extensions without a valid reason.`;
+  const n = daysTo(pr1Date), k = daysTo(SUBMIT_BY);
+  if (short) {
+    if (k !== null && k >= 0) return k === 0 ? "Due today · PR2 tomorrow" : `Due Tue, Nov 24 · ${dayWord(k)}`;
+    return n === null ? "PR2 date TBA" : n > 0 ? `PR2 presentation ${dayWord(n)}` : n === 0 ? "PR2 presentation today" : "PR2 done";
   }
-  if (short) return n > 0 ? `PR2 ${dayWord(n)}` : n === 0 ? "PR2 is today" : "PR2 done";
-  const sec = daysTo(pr1Date, 2);
-  return `Progress Report 2 is ${dayWord(n)}. Code and section PDFs are due ${dayWord(sec)}.`;
+  const due = k === null ? "" : k >= 0 ? `Everything is due Tuesday, Nov 24 (${dayWord(k)}). ` : "Submissions closed on Tuesday, Nov 24. ";
+  const pres = n === null ? "" : n >= 0 ? `The PR2 presentation is Wednesday, Nov 25 (${dayWord(n)}).` : "PR2 was presented on Nov 25.";
+  return (due + pres).trim();
 }
 const avatarEl = (m, cls = "") => el("div", { class: "avatar " + cls, style: `background:${COLORS[m.id]}`, "aria-hidden": "true" }, initials(m.name));
 const card = (title, body, right) => el("section", { class: "card" }, el("div", { class: "hd" }, typeof title === "string" ? el("h2", {}, title) : title, right || ""), el("div", { class: "bd" }, ...[].concat(body)));
@@ -1919,6 +1919,7 @@ function viewHome(page) {
         el("span", { class: "k" }, "Submission deadline"),
         el("div", { class: "big" }, left === null ? "–" : String(Math.max(left, 0)), el("small", {}, left === 1 ? " day" : " days")),
         el("b", {}, "Tue, Nov 24 · strict"),
+        el("small", { class: "pres" }, "Presentation: Wed, Nov 25"),
         el("div", { class: "hero-prog" }, el("span", {}, `${done} of ${tot} items in`), el("div", { class: "hbar" }, el("span", { style: `width:${tot ? Math.round(done / tot * 100) : 0}%` })))))));
 
   const main = el("div", { style: "display:grid;gap:22px;min-width:0" });
@@ -1926,7 +1927,7 @@ function viewHome(page) {
     el("div", { class: "announce" }, el("div", { class: "dot", html: `<svg class="i" viewBox="0 0 24 24">${ICON.mega}</svg>` }),
       el("div", {}, el("b", {}, "Progress Report 2 is open"),
         el("p", {}, "PR2 is about working code: the Game of Life rules must run and produce correct generations, with at least 3 normal tests, 1 boundary test and 1 invalid-input test. The full GUI is not needed yet. Click your name below to see your part and where to submit."),
-        el("small", {}, "Strict deadline: every PR2 item is due Tuesday, Nov 24. Submit early; no extensions without a valid reason.")))));
+        el("small", {}, "Strict deadline: every PR2 item is due Tuesday, Nov 24. Submit early; no extensions without a valid reason. We present PR2 on Wednesday, Nov 25.")))));
 
   const grid = el("div", { class: "people" });
   for (const m0 of MEMBERS) {
@@ -1984,7 +1985,7 @@ function viewHome(page) {
   const k24 = daysTo(SUBMIT_BY);
   const up = el("div", { class: "uplist" },
     tileD("Nov", "24", "PR2 submissions due", k24 === null ? "Strict" : k24 > 0 ? `${dayWord(k24)[0].toUpperCase() + dayWord(k24).slice(1)} · strict` : k24 === 0 ? "Today · strict" : "Closed", "hot"),
-    tileD("TBA", "–", "PR2 presentation", "Live run · 8–10 minutes"),
+    tileD("Nov", "25", "PR2 presentation", "Wednesday · live run, 8–10 minutes"),
     tileD("Nov", "11", "Progress Report 1", "Presented · all files in the PR1 archive", "past"));
   side.append(card("Upcoming", [up].concat(body.slice(1))));
   if (isOwnerViewer && db) side.append(driveCard());
@@ -2156,17 +2157,16 @@ function viewTimeline(page) {
   page.append(pageHead("PR2 schedule", pr1Date ? prCountdown(false) : "Dates appear once the PR2 presentation date is announced."));
   const at = off => { if (!pr1Date) return null; const d = new Date(pr1Date + "T12:00:00"); d.setDate(d.getDate() - off); return d; };
   const steps = [
-    [6, "As soon as possible", "life.py works", "Armas pushes a working life.py and patterns.py. Everyone else depends on it."],
-    [4, "This week", "Everyone's file works", "Tumulac: state.py + tests. Manalili: music.py. Diego: sound.py + README. Vik: main.py prototype."],
-    [2, null, "Code and PDFs due", "Part A (Armas), test documentation + updated decomposition (Tumulac), README (Diego). Upload here and push to GitHub."],
-    [1, null, "Combine and capture", "Manalili takes the output screenshots. Vik builds the combined report and the deck."],
-    [1, null, "Rehearse the live run", "Run the prototype and the tests live, in presentation order, 8–10 minutes."],
+    [4, null, "life.py works", "Armas pushes a working life.py and patterns.py. Everyone else depends on it."],
+    [3, null, "Everyone's file works", "Tumulac: state.py + tests. Manalili: music.py. Diego: sound.py + README. Vik: main.py prototype."],
+    [2, null, "Tests run, screenshots taken", "Tumulac runs the test cases; Manalili captures the program output. PDFs written."],
+    [1, null, "Everything due (strict)", "All code, PDFs and screenshots uploaded here and pushed to GitHub. Vik builds the combined report and the deck."],
     [0, null, "Progress Report 2", "Live execution, test cases, GitHub history, and submit everything to the PR2 bin."]
   ];
   const t = el("div", { class: "timeline" });
   steps.forEach(([off, label, title, text], i) => {
     const d = at(off), n = pr1Date ? daysTo(pr1Date, off) : null;
-    const when = label && (!d || n > 0) ? label : d ? `${d.toLocaleDateString(undefined, { weekday: "short", month: "short", day: "numeric" })}${n !== null ? " · " + dayWord(n) : ""}` : ["", "", "2 days before PR2", "Day before PR2", "Day before PR2", "PR2 day"][i];
+    const when = label && (!d || n > 0) ? label : d ? `${d.toLocaleDateString(undefined, { weekday: "short", month: "short", day: "numeric" })}${n !== null ? " · " + dayWord(n) : ""}` : ["", "", "", "Tue, Nov 24", "PR2 day"][i];
     t.append(el("div", { class: "phasebox" + (n === 0 ? " pr1box" : "") + (n !== null && n < 0 ? " pastbox" : "") }, el("span", { class: "days" }, when || label), el("h3", {}, `${i + 1} · ${title}`), el("p", {}, text)));
   });
   page.append(el("section", { class: "card" }, t));
@@ -2465,7 +2465,7 @@ document.addEventListener("keydown", e => { if (e.key === "Escape") { const o = 
 
 const TOUR = [
   { art: "👋", title: "Welcome to the Group 2 portal", body: "This is where we finish Progress Report 2 for Game of Life with Music: working code, tests and a live run. No sign-in needed: just open the link.",
-    list: ["Everything due: Tuesday, November 24 (strict)", "PR2 presentation: date to be announced"] },
+    list: ["Everything due: Tuesday, November 24 (strict)", "PR2 presentation: Wednesday, November 25"] },
   { art: "🧑‍💻", title: "Find your part", body: "Click your name under Group members on the left (on a phone, tap ☰ first).",
     list: ["Instructions: your steps, what your work must show, and when you're done", "Code file: the functions to fill in, with their exact names"] },
   { art: "📤", title: "Submit your work", body: "In the Submission box on your page:",
@@ -2525,7 +2525,7 @@ function openLegal(tab) {
 
 /* ================================================================== boot */
 route = parseHash();
-pr1Date = null;   /* PR2 date not announced yet; set it here when it is (YYYY-MM-DD) */
+pr1Date = "2026-11-25";   /* PR2 presentation: Wednesday, Nov 25 */
 renderAll();
 
 /* splash: a glider walks across a 6x6 board while the submissions load */
