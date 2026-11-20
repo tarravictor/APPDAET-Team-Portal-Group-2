@@ -543,6 +543,69 @@ h2 { font-size: 17px; }
   .topbar .logo { display: flex; }
   .sidebar { grid-row: auto; }
 }
+
+/* ---- PR2 UI pass 2: SYSANDE-style hero, upcoming tiles, numbered modules, member list ---- */
+.hero { min-height: 0; align-content: stretch; }
+.hero .in.hero-grid { display: grid; grid-template-columns: minmax(0, 1fr) 250px; gap: 26px; padding: 26px 28px; align-items: stretch; }
+.hero-main { display: grid; gap: 8px; align-content: center; }
+.hero h1 { font-size: clamp(26px, 3.2vw, 36px); }
+.hero p { max-width: 60ch; }
+.qas { display: flex; flex-wrap: wrap; gap: 8px; margin-top: 8px; }
+.qa { display: inline-flex; align-items: center; gap: 7px; padding: 7px 13px; border-radius: 10px; background: rgba(255,255,255,.95); color: #191B22; text-decoration: none; font-weight: 500; font-size: 14px; box-shadow: 0 1px 2px rgba(0,0,0,.08); transition: transform .15s, box-shadow .15s; }
+.qa:hover { transform: translateY(-1px); box-shadow: 0 6px 16px rgba(0,0,0,.18); }
+.qa .ic { color: #3B5BDB; }
+.hero-dl { border-left: 1px solid rgba(255,255,255,.22); padding-left: 24px; display: grid; align-content: center; gap: 4px; }
+.hero-dl .big { font-size: 58px; font-weight: 600; line-height: 1; letter-spacing: -.03em; font-variant-numeric: tabular-nums; }
+.hero-dl .big small { font-size: 18px; font-weight: 500; letter-spacing: 0; opacity: .85; }
+.hero-dl b { font-weight: 600; font-size: 15px; }
+.hero-prog { display: grid; gap: 6px; margin-top: 12px; font-size: 13px; opacity: .92; }
+.hbar { height: 6px; border-radius: 99px; background: rgba(255,255,255,.22); overflow: hidden; }
+.hbar span { display: block; height: 100%; background: #fff; border-radius: 99px; }
+
+.uplist { display: grid; }
+.up { display: grid; grid-template-columns: 46px 1fr; gap: 12px; align-items: center; padding: 10px 0; border-bottom: 1px solid var(--line); }
+.up:last-child { border-bottom: 0; }
+.up .dt { width: 46px; height: 50px; border-radius: 10px; border: 1px solid var(--line); background: var(--surface); display: grid; place-items: center; align-content: center; overflow: hidden; box-shadow: var(--shadow); }
+.up .dt small { display: block; width: 100%; text-align: center; font-size: 11px; font-weight: 600; color: var(--accent-text); background: var(--accent-soft); padding: 2px 0; }
+.up .dt b { font-size: 19px; font-weight: 600; line-height: 1.3; }
+.up > div:last-child b { display: block; font-weight: 500; }
+.up > div:last-child small { color: var(--muted); font-size: 13px; }
+.up.hot .dt small { background: var(--bad); color: #fff; }
+.up.hot > div:last-child small { color: var(--bad); font-weight: 500; }
+.up.past { opacity: .62; }
+
+.mrow.mnum { grid-template-columns: auto minmax(0, 1fr) 150px; padding: 14px 18px; }
+.num { width: 30px; height: 30px; border-radius: 50%; border: 1.5px solid var(--line-strong); display: grid; place-items: center; font-size: 13px; font-weight: 600; color: var(--muted); background: var(--surface); }
+.num.part { border-color: var(--born); color: var(--born); }
+.num.ok { border-color: var(--good); background: var(--good); color: #fff; }
+.mprog { display: grid; grid-template-columns: 1fr auto; gap: 10px; align-items: center; font-size: 12.5px; color: var(--muted); font-variant-numeric: tabular-nums; }
+
+.navlink.mem { padding: 6px 10px; }
+.navlink .mini { width: 22px; height: 22px; border-radius: 50%; color: #fff; font-size: 9.5px; font-weight: 600; display: grid; place-items: center; flex: none; letter-spacing: .02em; }
+.navlink .cnt { margin-left: auto; font-size: 12px; color: var(--faint); font-variant-numeric: tabular-nums; }
+.navlink .cnt.ok { color: var(--good); font-weight: 600; }
+
+.files { display: grid; gap: 3px; }
+.files a { font-weight: 500; }
+.files small { color: var(--muted); }
+.tile.tlink { text-decoration: none; color: var(--ink); transition: transform .15s, box-shadow .15s; }
+.tile.tlink:hover { transform: translateY(-2px); box-shadow: var(--shadow-lg); }
+.tile.tlink .big { color: var(--accent-text); font-size: 22px; }
+
+.person { gap: 12px; padding: 16px; }
+.person .go { display: inline-flex; gap: 6px; }
+.page > * { animation: rise .35s ease both; }
+.page > *:nth-child(2) { animation-delay: .04s; } .page > *:nth-child(3) { animation-delay: .08s; } .page > *:nth-child(4) { animation-delay: .12s; }
+@keyframes rise { from { opacity: 0; transform: translateY(6px); } to { opacity: 1; transform: none; } }
+@media (prefers-reduced-motion: reduce) { .page > * { animation: none; } }
+
+@media (max-width: 760px) {
+  .hero .in.hero-grid { grid-template-columns: 1fr; padding: 18px; gap: 16px; }
+  .hero-dl { border-left: 0; border-top: 1px solid rgba(255,255,255,.22); padding: 14px 0 0; }
+  .hero-dl .big { font-size: 44px; }
+  .mrow.mnum { grid-template-columns: auto minmax(0, 1fr); }
+  .mrow.mnum .mprog { grid-column: 2; }
+}
 </style>
 </head>
 <body>
@@ -1736,7 +1799,7 @@ function phaseDue(phaseId) {
   const d = new Date(deadline + "T12:00:00"); d.setDate(d.getDate() - p.offset);
   return "Due " + fmtDate(d);
 }
-const SUBMIT_BY = "2026-11-23";   /* Vik: every PR2 item is due Monday, Nov 23 (strict) */
+const SUBMIT_BY = "2026-11-24";   /* Vik: every PR2 item is due Tuesday, Nov 24 (strict) */
 function dueDateOf(slot) {
   if (slot.due && SUBMIT_BY) return new Date(SUBMIT_BY + "T12:00:00");
   if (slot.due) {
@@ -1781,8 +1844,8 @@ function prCountdown(short) {
   if (n === null) {
     const k = daysTo(SUBMIT_BY);
     if (k === null) return short ? "PR2 date TBA" : "The PR2 date hasn't been announced yet.";
-    if (short) return k > 0 ? `Due Mon, Nov 23 · ${dayWord(k)}` : k === 0 ? "Due today" : "Deadline passed";
-    return `Everything is due Monday, Nov 23 (${dayWord(k)}). No extensions without a valid reason.`;
+    if (short) return k > 0 ? `Due Tue, Nov 24 · ${dayWord(k)}` : k === 0 ? "Due today" : "Deadline passed";
+    return `Everything is due Tuesday, Nov 24 (${dayWord(k)}). No extensions without a valid reason.`;
   }
   if (short) return n > 0 ? `PR2 ${dayWord(n)}` : n === 0 ? "PR2 is today" : "PR2 done";
   const sec = daysTo(pr1Date, 2);
@@ -1815,10 +1878,13 @@ function renderSidebar() {
   sb.append(el("div", { class: "navgroup" }, "Course"), link("#rules", "book", "Resources", "rules"), link("#timeline", "cal", "PR2 schedule", "timeline"));
   sb.append(el("div", { class: "navgroup" }, "Group members"));
   for (const m of MEMBERS) {
-    const a = el("a", { class: "navlink", href: "#" + m.id, "aria-current": route.view === "member" && route.id === m.id ? "page" : false },
-      el("span", { style: `width:10px;height:10px;border-radius:3px;background:${COLORS[m.id]};flex:none;margin:0 4px` }), el("span", {}, m.short));
+    const [d, t] = progress(viewOf(m));
+    const a = el("a", { class: "navlink mem", href: "#" + m.id, "aria-current": route.view === "member" && route.id === m.id ? "page" : false },
+      el("span", { class: "mini", style: `background:${COLORS[m.id]}` }, initials(m.name)), el("span", {}, m.short),
+      el("span", { class: "cnt" + (d === t ? " ok" : "") }, d === t ? "✓" : `${d}/${t}`));
     sb.append(a);
   }
+  sb.append(el("div", { class: "navgroup" }, "Past reports"), link("#pr1", "check", "Progress Report 1", "pr1", el("span", { class: "badge all" }, "✓")));
   sb.append(el("div", { class: "foot" },
     el("button", { type: "button", class: "legal-link", onclick: () => openLegal("privacy") }, "Privacy"), " · ",
     el("button", { type: "button", class: "legal-link", onclick: () => openLegal("terms") }, "Terms"), " · ",
@@ -1869,16 +1935,30 @@ const pageHead = (title, sub, right) => el("div", { style: "display:flex;flex-wr
 function viewHome(page) {
   renderCrumbs([["Home"]]);
   page.append(bannerEl());
+  const left = daysTo(SUBMIT_BY), allM = MEMBERS.map(m => viewOf(m));
+  const tot = allM.reduce((n, m) => n + m.slots.length, 0), done = tot - missingCount();
+  const hourWord = () => { const h = new Date(); return h.toLocaleString("en-US", { hour: "numeric", hour12: false, timeZone: "Asia/Manila" }); };
+  const hr = +hourWord(), greet = hr < 12 ? "Good morning" : hr < 18 ? "Good afternoon" : "Good evening";
+  const qa = (href, ic, text) => el("a", { class: "qa", href }, icon(ic), el("span", {}, text));
   page.append(el("div", { class: "hero" }, el("canvas", { id: "life", "aria-hidden": "true" }),
-    el("div", { class: "in" }, el("span", { class: "k" }, "APPDAET · Final Project 06 · Progress Report 2"), el("h1", {}, "Game of Life with Music"),
-      el("p", {}, "Working code: the algorithm runs, the generations evolve, and the tests pass. " + prCountdown(false)))));
+    el("div", { class: "in hero-grid" },
+      el("div", { class: "hero-main" },
+        el("span", { class: "k" }, "APPDAET · Game of Life with Music · Progress Report 2"),
+        el("h1", {}, greet + ", Group 2"),
+        el("p", {}, "PR2 is working code: the algorithm runs, the generations evolve, and the tests pass. Pick your name below to see your part."),
+        el("div", { class: "qas" }, qa("#modules", "modules", "PR2 module"), qa("#assignments", "assign", "Assignments"), qa("#folder", "folder", "Submissions"), qa("#pr1", "check", "PR1 archive"))),
+      el("div", { class: "hero-dl" },
+        el("span", { class: "k" }, "Submission deadline"),
+        el("div", { class: "big" }, left === null ? "–" : String(Math.max(left, 0)), el("small", {}, left === 1 ? " day" : " days")),
+        el("b", {}, "Tue, Nov 24 · strict"),
+        el("div", { class: "hero-prog" }, el("span", {}, `${done} of ${tot} items in`), el("div", { class: "hbar" }, el("span", { style: `width:${tot ? Math.round(done / tot * 100) : 0}%` })))))));
 
   const main = el("div", { style: "display:grid;gap:22px;min-width:0" });
   main.append(card(el("div", { style: "display:flex;gap:10px;align-items:center" }, icon("mega"), el("h2", {}, "Announcement")),
     el("div", { class: "announce" }, el("div", { class: "dot", html: `<svg class="i" viewBox="0 0 24 24">${ICON.mega}</svg>` }),
       el("div", {}, el("b", {}, "Progress Report 2 is open"),
         el("p", {}, "PR2 is about working code: the Game of Life rules must run and produce correct generations, with at least 3 normal tests, 1 boundary test and 1 invalid-input test. The full GUI is not needed yet. Click your name below to see your part and where to submit."),
-        el("small", {}, "Strict deadline: every PR2 item is due Monday, Nov 23. Submit early; no extensions without a valid reason. Progress Report 1 was presented on Nov 11.")))));
+        el("small", {}, "Strict deadline: every PR2 item is due Tuesday, Nov 24. Submit early; no extensions without a valid reason.")))));
 
   const grid = el("div", { class: "people" });
   for (const m0 of MEMBERS) {
@@ -1932,7 +2012,13 @@ function viewHome(page) {
       el("label", { for: "pr1Input" }, "PR2 presentation date", p),
       el("div", { class: "actions" }, btn, note)));
   }
-  side.append(card("Key dates", body));
+  const tileD = (mon, day, title, sub, cls = "") => el("div", { class: "up " + cls }, el("div", { class: "dt" }, el("small", {}, mon), el("b", {}, day)), el("div", {}, el("b", {}, title), el("small", {}, sub)));
+  const k24 = daysTo(SUBMIT_BY);
+  const up = el("div", { class: "uplist" },
+    tileD("Nov", "24", "PR2 submissions due", k24 === null ? "Strict" : k24 > 0 ? `${dayWord(k24)[0].toUpperCase() + dayWord(k24).slice(1)} · strict` : k24 === 0 ? "Today · strict" : "Closed", "hot"),
+    tileD("TBA", "–", "PR2 presentation", "Live run · 8–10 minutes"),
+    tileD("Nov", "11", "Progress Report 1", "Presented · all files in the PR1 archive", "past"));
+  side.append(card("Upcoming", [up].concat(body.slice(1))));
   if (isOwnerViewer && db) side.append(driveCard());
   page.append(el("div", { class: "grid2" }, main, side));
 }
@@ -1949,9 +2035,10 @@ function viewModules(page) {
   for (const id of PRESENT_ORDER) {
     const m = viewOf(MEMBERS.find(x => x.id === id)), [dd, tt] = progress(m);
     const first = m.slots.slice().sort((a, b) => dueRank(a) - dueRank(b))[0];
-    rows.append(el("a", { class: "mrow", href: "#" + m.id },
-      icon("assign"), el("div", {}, el("b", {}, cleanRole(m.role)), el("small", {}, `${m.name} · ${dueText(first)} · ${m.slots.length} item${m.slots.length > 1 ? "s" : ""}`)),
-      statusPill(dd, tt)));
+    rows.append(el("a", { class: "mrow mnum", href: "#" + m.id },
+      el("span", { class: "num" + (dd === tt ? " ok" : dd ? " part" : "") }, dd === tt ? "✓" : String(PRESENT_ORDER.indexOf(id) + 1)),
+      el("div", {}, el("b", {}, cleanRole(m.role)), el("small", {}, `${m.name} · ${dueText(first)}`)),
+      el("div", { class: "mprog" }, progBar(dd, tt), el("span", {}, `${dd}/${tt}`))));
   }
   rows.append(el("a", { class: "mrow", href: "#rules" }, icon("book"), el("div", {}, el("b", {}, "Resources: rules, repo structure, Git workflow"), el("small", {}, "Read before you start")), el("span")));
   rows.append(el("a", { class: "mrow", href: "#timeline" }, icon("cal"), el("div", {}, el("b", {}, "PR2 schedule"), el("small", {}, "What happens on which day")), el("span")));
@@ -2051,6 +2138,43 @@ function viewFolder(page) {
   page.append(el("p", { class: "foot-note" }, "Uploads go straight into the group's Google Drive folder (one folder per member). Every submission is logged with its date and time in SUBMISSIONS_LOG.md and the Project 06 Submissions sheet. No sign-in needed."));
   if (isOwnerViewer && db) page.append(driveCard());
   page.append(el("p", { class: "foot-note" }, "Accepted uploads: .pdf, .png, .jpg, .py, .md, .txt, .csv, .json, .docx, .pptx, .xlsx, .zip (max 20 MB). Bigger files: paste a Google Drive link."));
+}
+
+function viewPR1(page) {
+  renderCrumbs([["Home", "#"], ["Progress Report 1"]]);
+  page.append(pageHead("Progress Report 1", "Project foundation, planning and GitHub initialization. Presented Nov 11, 2026. Every file the group handed in is below."));
+  const req = [
+    ["Project proposal and requirements analysis", "Section A · PDF", "manalili", "pr1-scope"],
+    ["Main algorithm flowchart or pseudocode", "Section B1 · PDF", "armas", "pr1-algo"],
+    ["Functional decomposition and program structure", "Section B2 · PDF", "tumulac", "pr1-decomp"],
+    ["Combined PR1 report (with AI disclosure)", "One PDF", "tumulac", "pr1-report"],
+    ["Development environment and resources", "Section C · PDF", "diego", "pr1-env"],
+    ["Initial GUI wireframe", "PDF or image", "diego", "pr1-wire"],
+    ["GitHub repository URL", "Direct link", "vik", "pr1-repo"],
+    ["GitHub initialization evidence", "Screenshots", "vik", "pr1-gh"],
+    ["Development timeline and member responsibilities", "Section E · PDF", "vik", "pr1-pm"],
+    ["Progress Report 1 presentation", "PDF / Canva", "vik", "pr1-slides"]
+  ];
+  let inN = 0;
+  const body = el("tbody");
+  req.forEach(([what, fmt, who, slot]) => {
+    const m = MEMBERS.find(x => x.id === who), items = slotItems(who, slot);
+    if (items.length) inN++;
+    const files = items.length ? el("div", { class: "files" }, ...items.map(it => { const href = itemLink(it.data), lk = it.data.link || "", label = it.data.fileName || (/github\.com/.test(lk) ? "GitHub repository" : /canva/.test(lk) ? "Canva deck" : /drive\.google/.test(lk) ? "Google Drive file" : lk || "file");
+      return el("div", {}, href ? el("a", { href, target: "_blank", rel: "noopener" }, label) : label, el("small", {}, it.data.at ? ` · ${phDate(it.data.at)}` : "")); }))
+      : el("span", { class: "foot-note" }, "Compiled in the READY FOR SUBMISSION folder");
+    body.append(el("tr", {}, el("td", {}, el("b", {}, what), el("div", { class: "foot-note" }, fmt)),
+      el("td", {}, el("div", { class: "who" }, avatarEl(m), m.short)), el("td", {}, files),
+      el("td", {}, el("span", { class: "pill " + (items.length ? "in" : "due") }, items.length ? "Submitted" : "In folder"))));
+  });
+  page.append(el("div", { class: "summary" },
+    el("div", { class: "tile" }, el("div", { class: "big" }, "Nov 11"), el("div", { class: "sm" }, "Presented")),
+    el("div", { class: "tile" }, el("div", { class: "big" }, `${inN}/${req.length}`), el("div", { class: "sm" }, "Uploaded through the portal")),
+    el("a", { class: "tile tlink", href: "https://drive.google.com/drive/folders/1OJQ7x9MtcgyRUGaQkcX1NL5vdOQx_63Q", target: "_blank", rel: "noopener" }, el("div", { class: "big" }, "Folder ↗"), el("div", { class: "sm" }, "READY FOR SUBMISSION (final PDFs)")),
+    el("a", { class: "tile tlink", href: "https://github.com/tarravictor/Game-of-Life-Final-Project-Group-2", target: "_blank", rel: "noopener" }, el("div", { class: "big" }, "GitHub ↗"), el("div", { class: "sm" }, "Project repository"))));
+  page.append(el("section", { class: "card" }, el("div", { class: "hd" }, el("h2", {}, "PR1 submissions"), el("span", { class: "pill in" }, "Done")),
+    el("div", { class: "tbl-wrap" }, el("table", { class: "t" },
+      el("thead", {}, el("tr", {}, el("th", {}, "Deliverable"), el("th", {}, "Owner"), el("th", {}, "Files and links"), el("th", {}, "Status"))), body))));
 }
 
 function viewRules(page) {
@@ -2189,7 +2313,7 @@ function renderSlot(m, s) {
 function parseHash() {
   const h = location.hash.slice(1);
   if (MEMBERS.some(m => m.id === h)) return { view: "member", id: h };
-  if (["modules", "assignments", "people", "folder", "rules", "timeline"].includes(h)) return { view: h, id: null };
+  if (["modules", "assignments", "people", "folder", "rules", "timeline", "pr1"].includes(h)) return { view: h, id: null };
   return { view: "home", id: null };
 }
 
@@ -2202,7 +2326,7 @@ function renderAll() {
 
   renderSidebar(); renderTop();
   const page = $("#page"); page.textContent = "";
-  ({ home: viewHome, modules: viewModules, assignments: viewAssignments, people: viewPeople, folder: viewFolder, rules: viewRules, timeline: viewTimeline, member: viewMember })[route.view](page);
+  ({ home: viewHome, modules: viewModules, assignments: viewAssignments, people: viewPeople, folder: viewFolder, rules: viewRules, timeline: viewTimeline, member: viewMember, pr1: viewPR1 })[route.view](page);
 
   for (const [id, v] of Object.entries(typed)) { const i = document.getElementById(id); if (i) { i.value = v; i.closest(".linkrow").classList.add("open"); } }
   for (const [id, [t, c]] of Object.entries(msgs)) { const sl = document.getElementById(id); const mm = sl && sl.querySelector(".msg"); if (mm) { mm.textContent = t; mm.className = c; } }
@@ -2373,7 +2497,7 @@ document.addEventListener("keydown", e => { if (e.key === "Escape") { const o = 
 
 const TOUR = [
   { art: "👋", title: "Welcome to the Group 2 portal", body: "This is where we finish Progress Report 2 for Game of Life with Music: working code, tests and a live run. No sign-in needed: just open the link.",
-    list: ["Everything due: Monday, November 23 (strict)", "PR2 presentation: date to be announced"] },
+    list: ["Everything due: Tuesday, November 24 (strict)", "PR2 presentation: date to be announced"] },
   { art: "🧑‍💻", title: "Find your part", body: "Click your name under Group members on the left (on a phone, tap ☰ first).",
     list: ["Instructions: your steps, what your work must show, and when you're done", "Code file: the functions to fill in, with their exact names"] },
   { art: "📤", title: "Submit your work", body: "In the Submission box on your page:",
