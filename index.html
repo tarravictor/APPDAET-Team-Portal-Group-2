@@ -21,20 +21,6 @@
   --font-mono: "IBM Plex Mono", ui-monospace, Consolas, monospace;
   color-scheme: light;
 }
-@media (prefers-color-scheme: dark) {
-  :root:not([data-theme="light"]) {
-    --bg: #12141e; --surface: #1b1f2d; --ink: #e6e9f2; --muted: #9aa3bd; --line: #2c3245;
-    --accent: #6c9cff; --born: #f2b938; --accent-soft: #1f2b47; --born-soft: #3a2f14;
-    --good: #4cc47e; --good-soft: #163524; --bad: #ff8a73; --bad-soft: #3d1d17; --code-bg: #151925; --nav: #0d0f17; --nav-ink: #aab3cc;
-    color-scheme: dark;
-  }
-}
-:root[data-theme="dark"] {
-  --bg: #12141e; --surface: #1b1f2d; --ink: #e6e9f2; --muted: #9aa3bd; --line: #2c3245;
-  --accent: #6c9cff; --born: #f2b938; --accent-soft: #1f2b47; --born-soft: #3a2f14;
-  --good: #4cc47e; --good-soft: #163524; --bad: #ff8a73; --bad-soft: #3d1d17; --code-bg: #151925; --nav: #0d0f17; --nav-ink: #aab3cc;
-  color-scheme: dark;
-}
 * { box-sizing: border-box; }
 html, body { margin: 0; height: 100%; }
 body { background: var(--bg); color: var(--ink); font-family: var(--font-body); font-size: 15.5px; line-height: 1.55; }
@@ -439,23 +425,6 @@ pre { margin: 0; padding: 0 14px 14px; overflow-x: auto; font-family: var(--font
   --font-body: "Geist", "Segoe UI", system-ui, -apple-system, sans-serif;
   --font-mono: "Geist Mono", ui-monospace, Consolas, monospace;
 }
-@media (prefers-color-scheme: dark) {
-  :root:not([data-theme="light"]) {
-    --bg: #0E1014; --side: #121419; --surface: #171A20; --hover: #1E2129; --line: #262A33; --line-strong: #343945;
-    --ink: #E9EAEE; --muted: #9298A6; --faint: #6B7180;
-    --accent: #7B93FF; --accent-soft: #1D2440; --accent-text: #A3B4FF;
-    --born: #F5A524; --born-soft: #2E2412; --good: #3DD68C; --good-soft: #12291E; --bad: #FF6B6B; --bad-soft: #2E1517;
-    --code-bg: #1F232B; --shadow: 0 1px 2px rgba(0,0,0,.4); --shadow-lg: 0 16px 48px rgba(0,0,0,.55);
-  }
-}
-:root[data-theme="dark"] {
-  --bg: #0E1014; --side: #121419; --surface: #171A20; --hover: #1E2129; --line: #262A33; --line-strong: #343945;
-  --ink: #E9EAEE; --muted: #9298A6; --faint: #6B7180;
-  --accent: #7B93FF; --accent-soft: #1D2440; --accent-text: #A3B4FF;
-  --born: #F5A524; --born-soft: #2E2412; --good: #3DD68C; --good-soft: #12291E; --bad: #FF6B6B; --bad-soft: #2E1517;
-  --code-bg: #1F232B; --shadow: 0 1px 2px rgba(0,0,0,.4); --shadow-lg: 0 16px 48px rgba(0,0,0,.55);
-  color-scheme: dark;
-}
 body { font-size: 14.5px; line-height: 1.5; -webkit-font-smoothing: antialiased; }
 a { color: var(--accent-text); }
 :focus-visible { outline: 2px solid var(--accent); }
@@ -503,7 +472,6 @@ h2 { font-size: 17px; }
 .hero .k { font-family: var(--font-body); text-transform: none; letter-spacing: 0; color: rgba(255,255,255,.82); font-size: 13px; }
 .hero h1 { font-weight: 600; letter-spacing: -.02em; }
 .hero p { opacity: .9; }
-:root[data-theme="dark"] .hero { background: linear-gradient(135deg, #2B3F9E 0%, #1E2C73 100%); }
 
 /* people, avatars, progress */
 .avatar { border-radius: 50%; font-family: var(--font-body); font-weight: 600; font-size: 14px; }
@@ -1890,7 +1858,7 @@ function renderSidebar() {
     el("button", { type: "button", class: "legal-link", onclick: () => openLegal("terms") }, "Terms"), " · ",
     el("button", { type: "button", class: "legal-link", onclick: () => openLegal("tech") }, "Built with"),
     el("div", { style: "margin-top:4px" }, "© 2026 APPDAET Group 2")),
-    themeSwitch());
+  );
 }
 
 /* Light / Dark / Auto, remembered on this device (as in the SYSANDE portal) */
@@ -1910,7 +1878,7 @@ function themeSwitch() {
   });
   return box;
 }
-applyTheme(getTheme());
+try { localStorage.removeItem(THEME_KEY); } catch (e) {}   /* light mode only */
 
 function renderCrumbs(list) {
   const c = $("#crumbs"); c.textContent = "";
@@ -1940,7 +1908,7 @@ function viewHome(page) {
   const hourWord = () => { const h = new Date(); return h.toLocaleString("en-US", { hour: "numeric", hour12: false, timeZone: "Asia/Manila" }); };
   const hr = +hourWord(), greet = hr < 12 ? "Good morning" : hr < 18 ? "Good afternoon" : "Good evening";
   const qa = (href, ic, text) => el("a", { class: "qa", href }, icon(ic), el("span", {}, text));
-  page.append(el("div", { class: "hero" }, el("canvas", { id: "life", "aria-hidden": "true" }),
+  page.append(el("div", { class: "hero" },
     el("div", { class: "in hero-grid" },
       el("div", { class: "hero-main" },
         el("span", { class: "k" }, "APPDAET · Game of Life with Music · Progress Report 2"),
